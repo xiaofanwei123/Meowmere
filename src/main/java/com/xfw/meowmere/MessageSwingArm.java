@@ -1,13 +1,11 @@
 package com.xfw.meowmere;
 
 import com.xfw.meowmere.item.MeowmereSword;
-import com.xfw.meowmere.item.XItemRegistry;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 //武器挥动需要客户端向服务端发送
@@ -32,10 +30,9 @@ public record MessageSwingArm() implements CustomPacketPayload {
 
     public void handle(IPayloadContext context) {
         context.enqueueWork(() -> {
-            System.out.println("swing");
             if (context.player() instanceof ServerPlayer serverPlayer){
-                if (serverPlayer.getMainHandItem().getItem() == XItemRegistry.MEOWMERE.get() && serverPlayer.swingTime <= 0) {
-                    MeowmereSword.onLeftClick(serverPlayer,context.player().getAttributeValue(Attributes.ATTACK_DAMAGE));
+                if (serverPlayer.getMainHandItem().getItem() == Meowmere.MEOWMERE.get() && serverPlayer.swingTime <= 0) {
+                    MeowmereSword.addProjectile(serverPlayer);
                 }
             }}).exceptionally(e -> {
             context.disconnect(Component.translatable("neoforge.network.invalid_flow", e.getMessage()));
